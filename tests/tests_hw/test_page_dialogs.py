@@ -50,9 +50,9 @@ def test_navigation_modal(driver):
     time.sleep(2)
 
     current_url = page.get_current_url()
-    assert 'demoqa.com' in current_url, f"URL должен содержать 'demoqa.com', но получен: {current_url}"
+    assert 'demoqa.com' in current_url,  {current_url}
 
     page_title = page.get_page_title()
-    assert page_title, f"Title не должен быть пустым"
+    assert page_title
 
     page.set_window_size(1000, 1000)
