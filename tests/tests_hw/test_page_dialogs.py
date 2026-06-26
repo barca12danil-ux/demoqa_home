@@ -7,7 +7,6 @@ import time
 
 def test_modal_elements(driver):
     page = ModalDialogs(driver)
-
     page.visit()
     time.sleep(3)
 
@@ -19,18 +18,19 @@ def test_modal_elements(driver):
         pass
 
     left_panel = driver.find_element(By.CSS_SELECTOR, '.left-pannel')
-
-    buttons = left_panel.find_elements(By.CSS_SELECTOR, 'li.btn')
+    buttons = left_panel.find_elements(By.CSS_SELECTOR, 'li.btn.btn-light')
     button_count = len(buttons)
 
     print(f"\n\nНайдено кнопок: {button_count}\n\n")
+
+    for i, btn in enumerate(buttons):
+        print(f"Кнопка {i + 1}: {btn.text}")
 
     assert button_count == 5, f"Ожидалось 5 кнопок, но найдено {button_count}"
 
 
 def test_navigation_modal(driver):
     page = ModalDialogs(driver)
-
     page.visit()
     time.sleep(3)
 
@@ -50,9 +50,9 @@ def test_navigation_modal(driver):
     time.sleep(2)
 
     current_url = page.get_current_url()
-    assert 'demoqa.com' in current_url,  {current_url}
+    assert 'demoqa.com' in current_url, f"URL должен содержать 'demoqa.com', но получен: {current_url}"
 
     page_title = page.get_page_title()
-    assert page_title
+    assert page_title, f"Title не должен быть пустым"
 
     page.set_window_size(1000, 1000)
