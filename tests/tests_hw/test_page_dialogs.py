@@ -56,3 +56,4 @@ def test_navigation_modal(driver):
     assert page_title, f"Title не должен быть пустым"
 
     page.set_window_size(1000, 1000)
+
