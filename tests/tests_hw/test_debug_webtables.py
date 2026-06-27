@@ -1,37 +1,36 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import time
 
 
-def test_debug_pagination(driver):
-    driver.get('https://demoqa.com/webtables')
-
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, 'addNewRecordButton'))
-    )
-
+def test_debug_modal_visibility(driver):
+    driver.get('https://demoqa.com/modal-dialogs')
     time.sleep(2)
 
+    small_btn = driver.find_element(By.ID, 'showSmallModal')
+    small_btn.click()
+    time.sleep(2)
 
+    print("\n=== ПРОВЕРКА МОДАЛЬНОГО ОКНА ===\n")
 
-    all_divs = driver.find_elements(By.TAG_NAME, 'div')
+    try:
+        modal_by_id = driver.find_element(By.ID, 'smallModal')
+        print(f"✅ Модальное окно по ID найдено")
+        print(f"   Displayed: {modal_by_id.is_displayed()}")
+        print(f"   Class: {modal_by_id.get_attribute('class')}")
+    except Exception as e:
+        print(f"❌ Модальное окно по ID не найдено: {e}")
 
-    for i, div in enumerate(all_divs):
-        text = div.text.strip()
-        classes = div.get_attribute('class')
-        if 'Page 1' in text or 'of 1' in text:
-            print(f"НАЙДЕНО!")
-            print(f"Index: {i}")
-            print(f"Class: '{classes}'")
-            print(f"Text: '{text}'")
-            print()
+    try:
+        modal_by_class = driver.find_element(By.CLASS_NAME, 'modal-dialog')
+        print(f"✅ Модальное окно по классу найдено")
+        print(f"   Displayed: {modal_by_class.is_displayed()}")
+    except Exception as e:
+        print(f"❌ Модальное окно по классу не найдено: {e}")
 
+    all_modals = driver.find_elements(By.XPATH, "//*[contains(@class, 'modal')]")
+    print(f"\nВсего modal элементов: {len(all_modals)}")
 
-
-    for i, div in enumerate(all_divs):
-        text = div.text.strip()
-        classes = div.get_attribute('class')
-        if 'Page' in text and len(text) < 50:
-            print(f"{i + 1}. class='{classes}' text='{text}'")
+    for i, modal in enumerate(all_modals):
+        displayed = modal.is_displayed()
+        classes = modal.get_attribute('class')
+        print(f"{i + 1}. Class: '{classes}' Displayed: {displayed}")
