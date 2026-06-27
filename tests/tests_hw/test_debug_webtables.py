@@ -2,35 +2,59 @@ from selenium.webdriver.common.by import By
 import time
 
 
-def test_debug_modal_visibility(driver):
+def test_debug_modal_elements(driver):
     driver.get('https://demoqa.com/modal-dialogs')
     time.sleep(2)
 
-    small_btn = driver.find_element(By.ID, 'showSmallModal')
-    small_btn.click()
-    time.sleep(2)
+    print("\n=== ИЩЕМ 5 КНОПОК МЕНЮ ===\n")
 
-    print("\n=== ПРОВЕРКА МОДАЛЬНОГО ОКНА ===\n")
+    all_divs = driver.find_elements(By.TAG_NAME, 'div')
 
-    try:
-        modal_by_id = driver.find_element(By.ID, 'smallModal')
-        print(f"✅ Модальное окно по ID найдено")
-        print(f"   Displayed: {modal_by_id.is_displayed()}")
-        print(f"   Class: {modal_by_id.get_attribute('class')}")
-    except Exception as e:
-        print(f"❌ Модальное окно по ID не найдено: {e}")
+    menu_items = []
+    for div in all_divs:
+        text = div.text.strip()
+        classes = div.get_attribute('class')
 
-    try:
-        modal_by_class = driver.find_element(By.CLASS_NAME, 'modal-dialog')
-        print(f"✅ Модальное окно по классу найдено")
-        print(f"   Displayed: {modal_by_class.is_displayed()}")
-    except Exception as e:
-        print(f"❌ Модальное окно по классу не найдено: {e}")
+        if text in ['Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets', 'Interactions']:
+            menu_items.append({
+                'text': text,
+                'class': classes,
+                'tag': div.tag_name
+            })
 
-    all_modals = driver.find_elements(By.XPATH, "//*[contains(@class, 'modal')]")
-    print(f"\nВсего modal элементов: {len(all_modals)}")
+    print(f"Найдено элементов меню: {len(menu_items)}\n")
+    for i, item in enumerate(menu_items):
+        print(f"{i + 1}. Text: '{item['text']}'")
+        print(f"   Class: '{item['class']}'")
+        print(f"   Tag: {item['tag']}")
+        print()
 
-    for i, modal in enumerate(all_modals):
-        displayed = modal.is_displayed()
-        classes = modal.get_attribute('class')
-        print(f"{i + 1}. Class: '{classes}' Displayed: {displayed}")
+    print("\n=== ИЩЕМ ИКОНКУ HOME ===\n")
+
+    all_links = driver.find_elements(By.TAG_NAME, 'a')
+
+    for i, link in enumerate(all_links):
+        href = link.get_attribute('href')
+
+        if href and ('demoqa.com' in href and href.rstrip('/') in ['https://demoqa.com', 'https://demoqa.com/']):
+            print(f"✅ НАЙДЕНА HOME ССЫЛКА!")
+            print(f"   Index: {i + 1}")
+            print(f"   Href: '{href}'")
+            print(f"   Class: '{link.get_attribute('class')}'")
+            print(f"   Text: '{link.text.strip()}'")
+            print(f"   Tag: {link.tag_name}")
+
+            try:
+                svg = link.find_element(By.TAG_NAME, 'svg')
+                print(f"   ✅ Содержит SVG")
+            except:
+                print(f"   ❌ Без SVG")
+            print()
+            break
+
+    print("\n=== ВСЕ ССЫЛКИ С demoqa.com ===\n")
+
+    for i, link in enumerate(all_links[:5]):
+        href = link.get_attribute('href')
+        if href and 'demoqa.com' in href:
+            print(f"{i + 1}. Href: '{href}' | Text: '{link.text.strip()}' | Class: '{link.get_attribute('class')}'")

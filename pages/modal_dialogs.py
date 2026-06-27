@@ -2,47 +2,60 @@ from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import time
 
 
-class ModalDialogs(BasePage):
+class ModalDialogsPage(BasePage):
     def __init__(self, driver, base_url='https://demoqa.com/modal-dialogs'):
         super().__init__(driver, base_url)
 
-    def get_submenu_buttons(self):
-        try:
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, '.left-pannel'))
-            )
-        except:
-            pass
-
-        left_panel = self.driver.find_element(By.CSS_SELECTOR, '.left-pannel')
-        return left_panel.find_elements(By.CSS_SELECTOR, 'li.btn.btn-light')
+    def get_menu_buttons(self):
+        """Все кнопки меню (не уникальный локатор)"""
+        return self.driver.find_elements(By.XPATH,
+                                         "//div[contains(@class, 'element-group') and not(contains(@class, 'header'))]")
 
     def get_home_icon(self):
-        return self.driver.find_element(By.CSS_SELECTOR, "img[src*='Toolsqa']")
-
-    def count_submenu_buttons(self):
-        return len(self.get_submenu_buttons())
-
-    def click_home_icon(self):
-        self.get_home_icon().click()
-
-    def refresh_page(self):
-        self.driver.refresh()
-
-    def go_back(self):
-        self.driver.back()
-
-    def go_forward(self):
-        self.driver.forward()
-
-    def set_window_size(self, width, height):
-        self.driver.set_window_size(width, height)
-
-    def get_current_url(self):
-        return self.driver.current_url
+        """Иконка для перехода на главную"""
+        all_links = self.driver.find_elements(By.TAG_NAME, 'a')
+        for link in all_links:
+            href = link.get_attribute('href')
+            if href and href.rstrip('/') == 'https://demoqa.com':
+                return link
+        raise Exception("Home link not found")
 
     def get_page_title(self):
+        """Получить заголовок страницы"""
         return self.driver.title
 
+    def get_current_url(self):
+        """Получить текущий URL"""
+        return self.driver.current_url
+
+    def refresh_page(self):
+        """Обновить страницу"""
+        self.driver.refresh()
+        time.sleep(2)
+
+    def go_back(self):
+        """Шаг назад в браузере"""
+        self.driver.back()
+        time.sleep(2)
+
+    def go_forward(self):
+        """Шаг вперед в браузере"""
+        self.driver.forward()
+        time.sleep(2)
+
+    def set_window_size(self, width, height):
+        """Установить размер окна"""
+        self.driver.set_window_size(width, height)
+        time.sleep(1)
+
+    def click_home_icon(self):
+        """Клик по иконке домой"""
+        self.get_home_icon().click()
+        time.sleep(2)
+
+    def count_menu_buttons(self):
+        """Получить количество кнопок меню"""
+        return len(self.get_menu_buttons())

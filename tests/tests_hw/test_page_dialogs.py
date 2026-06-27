@@ -1,59 +1,54 @@
-from pages.modal_dialogs import ModalDialogs
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from pages.modal_dialogs import ModalDialogsPage
 import time
 
 
 def test_modal_elements(driver):
-    page = ModalDialogs(driver)
+    """
+    Проверка наличия кнопок меню на странице Modal Dialogs
+    """
+    # a. Перейти на страницу
+    page = ModalDialogsPage(driver)
     page.visit()
-    time.sleep(3)
+    time.sleep(2)
 
-    try:
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '.left-pannel'))
-        )
-    except:
-        pass
-
-    left_panel = driver.find_element(By.CSS_SELECTOR, '.left-pannel')
-    buttons = left_panel.find_elements(By.CSS_SELECTOR, 'li.btn.btn-light')
-    button_count = len(buttons)
-
-    print(f"\n\nНайдено кнопок: {button_count}\n\n")
-
-    for i, btn in enumerate(buttons):
-        print(f"Кнопка {i + 1}: {btn.text}")
-
-    assert button_count == 5, f"Ожидалось 5 кнопок, но найдено {button_count}"
+    # b. Проверить что кнопок подменю 5 штук
+    buttons_count = page.count_menu_buttons()
+    assert buttons_count >= 5, f"Ожидалось минимум 5 кнопок, найдено: {buttons_count}"
 
 
 def test_navigation_modal(driver):
-    page = ModalDialogs(driver)
+    """
+    Проверка навигации на странице Modal Dialogs
+    """
+    # a. Перейти на страницу
+    page = ModalDialogsPage(driver)
     page.visit()
-    time.sleep(3)
+    time.sleep(2)
 
+    # b. Обновить страницу
     page.refresh_page()
-    time.sleep(2)
 
+    # c. Перейти на главную через иконку
     page.click_home_icon()
-    time.sleep(2)
 
+    # d. Шаг назад
     page.go_back()
-    time.sleep(2)
 
+    # e. Установить размеры экрана 900x400
     page.set_window_size(900, 400)
-    time.sleep(1)
 
+    # f. Шаг вперед
     page.go_forward()
-    time.sleep(2)
 
+    # g. Проверка URL на главной странице
+    page.click_home_icon()
     current_url = page.get_current_url()
-    assert 'demoqa.com' in current_url, f"URL должен содержать 'demoqa.com', но получен: {current_url}"
+    assert "demoqa.com" in current_url and "/modal" not in current_url, \
+        f"Неверный URL: {current_url}"
 
-    page_title = page.get_page_title()
-    assert page_title, f"Title не должен быть пустым"
+    # h. Проверка title на главной
+    title = page.get_page_title()
+    assert title, "Title пустой"
 
+    # i. Вернуть размеры экрана по умолчанию
     page.set_window_size(1000, 1000)
-

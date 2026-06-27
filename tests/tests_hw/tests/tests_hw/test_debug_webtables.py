@@ -2,35 +2,44 @@ from selenium.webdriver.common.by import By
 import time
 
 
-def test_debug_modal_visibility(driver):
+def test_debug_modal_elements(driver):
     driver.get('https://demoqa.com/modal-dialogs')
     time.sleep(2)
 
-    small_btn = driver.find_element(By.ID, 'showSmallModal')
-    small_btn.click()
-    time.sleep(2)
+    print("\n=== ИЩЕМ КНОПКИ МЕНЮ ===\n")
 
-    print("\n=== ПРОВЕРКА МОДАЛЬНОГО ОКНА ===\n")
+    all_buttons = driver.find_elements(By.TAG_NAME, 'button')
+    print(f"Всего кнопок на странице: {len(all_buttons)}\n")
+
+    for i, btn in enumerate(all_buttons):
+        text = btn.text.strip()
+        classes = btn.get_attribute('class')
+        id_attr = btn.get_attribute('id')
+
+        if text and len(text) < 30:
+            print(f"{i + 1}. ID: '{id_attr}'")
+            print(f"   Text: '{text}'")
+            print(f"   Class: '{classes}'")
+            print()
+
+    print("\n=== ИЩЕМ ИКОНКУ HOME ===\n")
+
+    all_links = driver.find_elements(By.TAG_NAME, 'a')
+    print(f"Всего ссылок: {len(all_links)}\n")
+
+    for i, link in enumerate(all_links):
+        href = link.get_attribute('href')
+        classes = link.get_attribute('class')
+        text = link.text.strip()
+
+        if 'demoqa.com' in str(href) and ('home' in str(classes).lower() or text == 'DemoQA'):
+            print(f"{i + 1}. Href: '{href}'")
+            print(f"   Class: '{classes}'")
+            print(f"   Text: '{text}'")
+            print()
 
     try:
-        modal_by_id = driver.find_element(By.ID, 'smallModal')
-        print(f"✅ Модальное окно по ID найдено")
-        print(f"   Displayed: {modal_by_id.is_displayed()}")
-        print(f"   Class: {modal_by_id.get_attribute('class')}")
-    except Exception as e:
-        print(f"❌ Модальное окно по ID не найдено: {e}")
-
-    try:
-        modal_by_class = driver.find_element(By.CLASS_NAME, 'modal-dialog')
-        print(f"✅ Модальное окно по классу найдено")
-        print(f"   Displayed: {modal_by_class.is_displayed()}")
-    except Exception as e:
-        print(f"❌ Модальное окно по классу не найдено: {e}")
-
-    all_modals = driver.find_elements(By.XPATH, "//*[contains(@class, 'modal')]")
-    print(f"\nВсего modal элементов: {len(all_modals)}")
-
-    for i, modal in enumerate(all_modals):
-        displayed = modal.is_displayed()
-        classes = modal.get_attribute('class')
-        print(f"{i + 1}. Class: '{classes}' Displayed: {displayed}")
+        logo = driver.find_element(By.XPATH, "//*[@class='logo']")
+        print(f"✅ Логотип найден: {logo.get_attribute('class')}")
+    except:
+        print("❌ Логотип не найден")
